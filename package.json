@@ -10,6 +10,7 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "clsx": "^1.1.1",
+    "eslint-import-resolver-alias": "^1.1.2",
     "next": "9.5.3",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
