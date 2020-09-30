@@ -10,17 +10,19 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "clsx": "^1.1.1",
-    "eslint-import-resolver-alias": "^1.1.2",
+    "mongoose": "^5.10.7",
     "next": "9.5.3",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "swr": "^0.3.5"
   },
   "devDependencies": {
     "babel-eslint": "^10.1.0",
     "eslint": "^7.2.0",
     "eslint-config-airbnb": "^18.2.0",
     "eslint-config-prettier": "^6.11.0",
+    "eslint-import-resolver-alias": "^1.1.2",
     "eslint-plugin-import": "^2.21.2",
     "eslint-plugin-jsx-a11y": "^6.3.0",
     "eslint-plugin-prettier": "^3.1.4",
