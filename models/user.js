@@ -1,16 +1,19 @@
 import mongoose from 'mongoose';
+import uniqueValidator from 'mongoose-unique-validator';
 
 const UserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       required: [true, 'Please provide a name.'],
+      unique: true,
       maxlength: [36, 'Username cannot be more than 36 characters'],
       trim: true,
     },
     email: {
       type: String,
       required: [true, 'Please provide an email.'],
+      unique: true,
       maxlength: [320, 'Email address cannot be more than 320 characters'],
       trim: true,
     },
@@ -24,5 +27,9 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+UserSchema.plugin(uniqueValidator, {
+  message: '{VALUE} has already been used.',
+});
 
 export default mongoose.models.User || mongoose.model('User', UserSchema);

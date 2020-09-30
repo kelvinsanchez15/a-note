@@ -15,6 +15,7 @@ async function dbConnect() {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useFindAndModify: false,
+    useCreateIndex: true,
   });
 
   connection.isConnected = db.connections[0].readyState;
