@@ -32,6 +32,7 @@ const UserSchema = new mongoose.Schema(
 );
 
 // Hash password
+// eslint-disable-next-line func-names
 UserSchema.pre('save', async function (next) {
   const user = this;
 
