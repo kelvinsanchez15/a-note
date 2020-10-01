@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "bcrypt": "^5.0.0",
     "clsx": "^1.1.1",
     "mongoose": "^5.10.7",
     "mongoose-unique-validator": "^2.0.3",
