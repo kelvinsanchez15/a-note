@@ -1,6 +1,5 @@
 import dbConnect from 'utils/dbConnect';
 import normalizeEmail from 'validator/lib/normalizeEmail';
-
 import User from 'models/User';
 
 export default async function handler(req, res) {
