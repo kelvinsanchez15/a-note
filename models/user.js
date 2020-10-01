@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import isEmail from 'validator/lib/isEmail';
 import uniqueValidator from 'mongoose-unique-validator';
 
 const UserSchema = new mongoose.Schema(
@@ -16,6 +17,7 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       maxlength: [320, 'Email address cannot be more than 320 characters'],
       trim: true,
+      validate: [isEmail, 'Invalid Email'],
     },
     password: {
       type: String,
