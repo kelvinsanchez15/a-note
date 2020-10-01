@@ -1,6 +1,7 @@
 import mongoose from 'mongoose';
 import isEmail from 'validator/lib/isEmail';
 import uniqueValidator from 'mongoose-unique-validator';
+import bcrypt from 'bcrypt';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -29,6 +30,17 @@ const UserSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// Hash password
+UserSchema.pre('save', async function (next) {
+  const user = this;
+
+  if (user.isModified('password')) {
+    user.password = await bcrypt.hash(user.password, 8);
+  }
+
+  next();
+});
 
 UserSchema.plugin(uniqueValidator, {
   message: '{VALUE} has already been used.',
