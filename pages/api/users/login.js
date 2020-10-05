@@ -29,8 +29,8 @@ export default async function handler(req, res) {
 
     const token = generateAuthToken(user._id);
     user.tokens.push(token);
-    await user.save();
 
+    await user.save();
     res.status(200).json({ success: true, data: user, token });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
