@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import dbConnect from 'utils/dbConnect';
+import generateAuthToken from 'utils/auth';
 import User from 'models/User';
 
 export default async function handler(req, res) {
@@ -26,7 +27,11 @@ export default async function handler(req, res) {
       throw new Error('Unable to login');
     }
 
-    res.status(200).json({ success: true, data: user });
+    const token = generateAuthToken(user._id);
+    user.tokens.push(token);
+    await user.save();
+
+    res.status(200).json({ success: true, data: user, token });
   } catch (error) {
     res.status(400).json({ success: false, error: error.message });
   }

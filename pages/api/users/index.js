@@ -1,4 +1,5 @@
 import dbConnect from 'utils/dbConnect';
+import generateAuthToken from 'utils/auth';
 import normalizeEmail from 'validator/lib/normalizeEmail';
 import User from 'models/User';
 
@@ -21,8 +22,13 @@ export default async function handler(req, res) {
         const { username, password } = req.body;
         const email = normalizeEmail(req.body.email);
 
-        const user = await User.create({ username, email, password });
-        res.status(201).json({ success: true, data: user });
+        const user = new User({ username, email, password });
+
+        const token = generateAuthToken(user._id);
+        user.tokens.push(token);
+
+        await user.save();
+        res.status(201).json({ success: true, data: user, token });
       } catch (error) {
         res.status(400).json({ success: false, error: error.message });
       }

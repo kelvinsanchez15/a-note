@@ -27,6 +27,7 @@ const UserSchema = new mongoose.Schema(
       trim: true,
     },
     notes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }],
+    tokens: [String],
   },
   { timestamps: true }
 );
