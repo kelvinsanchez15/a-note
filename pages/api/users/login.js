@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import dbConnect from 'utils/dbConnect';
-import generateAuthToken from 'utils/auth';
+import generateAuthToken from 'utils/getToken';
 import User from 'models/User';
 
 export default async function handler(req, res) {
