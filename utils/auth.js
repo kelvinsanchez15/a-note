@@ -22,6 +22,7 @@ const withAuth = (handler) => {
       }
 
       req.user = user;
+      req.token = token;
       return handler(req, res);
     } catch (error) {
       res.status(401).json({ success: false, error: 'Please authenticate' });
