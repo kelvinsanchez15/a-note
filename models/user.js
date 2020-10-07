@@ -34,6 +34,12 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+UserSchema.virtual('notes', {
+  ref: 'Note',
+  localField: '_id',
+  foreignField: 'owner',
+});
+
 // Hide sensitive data on JSON responses
 UserSchema.methods.toJSON = function toJSON() {
   const user = this;
