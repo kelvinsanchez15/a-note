@@ -29,7 +29,6 @@ const UserSchema = new mongoose.Schema(
       maxlength: [254, 'Password cannot be more than 254 characters'],
       trim: true,
     },
-    notes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Note' }],
     tokens: [String],
   },
   { timestamps: true }

@@ -14,6 +14,10 @@ const NoteSchema = new mongoose.Schema(
       maxlength: [250, 'Description cannot be more than 250 characters'],
       trim: true,
     },
+    owner: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+    },
   },
   { timestamps: true }
 );
