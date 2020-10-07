@@ -1,4 +1,4 @@
-import withAuth from 'utils/auth';
+import withAuth from 'middleware/auth';
 
 const handler = async (req, res) => {
   const { method } = req;
