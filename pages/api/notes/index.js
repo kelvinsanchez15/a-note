@@ -16,7 +16,22 @@ const handler = async (req, res) => {
       break;
     case 'GET':
       try {
-        await req.user.populate('notes').execPopulate();
+        const { title, description, limit, skip, sortBy } = req.query;
+        const match = {
+          ...(title && { title }),
+          ...(description && { description }),
+        };
+        const sort = {};
+
+        // GET /notes?sortBy=createdAt:desc || GET /notes?sortBy=updatedAt:desc
+        if (sortBy) {
+          const parts = sortBy.split(':');
+          sort[parts[0]] = parts[1] === 'desc' ? -1 : 1;
+        }
+
+        await req.user
+          .populate({ path: 'notes', match, options: { limit, skip, sort } })
+          .execPopulate();
         res.status(200).json({ success: true, data: req.user.notes });
       } catch (error) {
         res.status(400).json({ success: false });
