@@ -11,18 +11,6 @@ export default async function handler(req, res) {
   await dbConnect();
 
   switch (method) {
-    case 'GET':
-      try {
-        const user = await User.findById(id);
-        if (!user) {
-          res.status(400).json({ success: false });
-          return;
-        }
-        res.status(200).json({ success: true, data: user });
-      } catch (error) {
-        res.status(400).json({ success: false });
-      }
-      break;
     case 'PATCH':
       try {
         const { username, email, password } = req.body;
@@ -33,6 +21,10 @@ export default async function handler(req, res) {
         };
 
         const user = await User.findById(id);
+        if (!user) {
+          res.status(400).json({ success: false });
+          return;
+        }
 
         Object.keys(updates).forEach((update) => {
           user[update] = updates[update];
@@ -40,6 +32,18 @@ export default async function handler(req, res) {
 
         await user.save();
         res.status(200).json({ success: true, data: user });
+      } catch (error) {
+        res.status(400).json({ success: false, error: error.message });
+      }
+      break;
+    case 'DELETE':
+      try {
+        const user = await User.findByIdAndDelete(id);
+        if (!user) {
+          res.status(400).json({ success: false });
+          return;
+        }
+        res.status(200).json({ success: true, data: {} });
       } catch (error) {
         res.status(400).json({ success: false, error: error.message });
       }
