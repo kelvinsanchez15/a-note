@@ -9,7 +9,6 @@ const handler = async (req, res) => {
       try {
         const note = new Note({ ...req.body, owner: req.user._id });
         await note.save();
-
         res.status(201).json({ success: true, data: note });
       } catch (error) {
         res.status(400).json({ success: false, error: error.message });
