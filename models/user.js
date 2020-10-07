@@ -3,6 +3,7 @@ import isEmail from 'validator/lib/isEmail';
 import uniqueValidator from 'mongoose-unique-validator';
 import bcrypt from 'bcrypt';
 import jsonwebtoken from 'jsonwebtoken';
+import Note from 'models/Note';
 
 const jwt = jsonwebtoken;
 
@@ -72,6 +73,12 @@ UserSchema.pre('save', async function hashPassword(next) {
     user.password = await bcrypt.hash(user.password, 8);
   }
 
+  next();
+});
+
+UserSchema.pre('remove', async function deleteUserNotes(next) {
+  const user = this;
+  await Note.deleteMany({ owner: user._id });
   next();
 });
 
