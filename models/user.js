@@ -2,6 +2,9 @@ import mongoose from 'mongoose';
 import isEmail from 'validator/lib/isEmail';
 import uniqueValidator from 'mongoose-unique-validator';
 import bcrypt from 'bcrypt';
+import jsonwebtoken from 'jsonwebtoken';
+
+const jwt = jsonwebtoken;
 
 const UserSchema = new mongoose.Schema(
   {
@@ -32,9 +35,19 @@ const UserSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// Hash password
-// eslint-disable-next-line func-names
-UserSchema.pre('save', async function (next) {
+UserSchema.methods.generateAuthToken = async function generateAuthToken() {
+  const user = this;
+
+  const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET, {
+    expiresIn: '7 days',
+  });
+  user.tokens.push(token);
+
+  await user.save();
+  return token;
+};
+
+UserSchema.pre('save', async function hashPassword(next) {
   const user = this;
 
   if (user.isModified('password')) {
