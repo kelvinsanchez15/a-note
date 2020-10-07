@@ -51,6 +51,8 @@ UserSchema.methods.toJSON = function toJSON() {
   return userObject;
 };
 
+UserSchema.set('toObject', { virtuals: true });
+
 UserSchema.methods.generateAuthToken = async function generateAuthToken() {
   const user = this;
 
