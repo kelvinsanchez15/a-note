@@ -1,6 +1,6 @@
 import jsonwebtoken from 'jsonwebtoken';
-import User from 'models/User';
-import dbConnect from 'utils/dbConnect';
+import User from 'src/models/User';
+import dbConnect from 'src/utils/dbConnect';
 
 const jwt = jsonwebtoken;
 

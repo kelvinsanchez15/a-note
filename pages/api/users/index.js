@@ -1,6 +1,6 @@
-import dbConnect from 'utils/dbConnect';
+import dbConnect from 'src/utils/dbConnect';
 import normalizeEmail from 'validator/lib/normalizeEmail';
-import User from 'models/User';
+import User from 'src/models/User';
 
 export default async function handler(req, res) {
   const { method } = req;

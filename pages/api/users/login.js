@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
-import dbConnect from 'utils/dbConnect';
-import User from 'models/User';
+import dbConnect from 'src/utils/dbConnect';
+import User from 'src/models/User';
 
 export default async function handler(req, res) {
   const { method } = req;

@@ -3,7 +3,7 @@ import isEmail from 'validator/lib/isEmail';
 import uniqueValidator from 'mongoose-unique-validator';
 import bcrypt from 'bcrypt';
 import jsonwebtoken from 'jsonwebtoken';
-import Note from 'models/Note';
+import Note from 'src/models/Note';
 
 const jwt = jsonwebtoken;
 

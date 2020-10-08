@@ -1,4 +1,4 @@
-import withAuth from 'middleware/auth';
+import withAuth from 'src/middleware/auth';
 import normalizeEmail from 'validator/lib/normalizeEmail';
 
 const handler = async (req, res) => {

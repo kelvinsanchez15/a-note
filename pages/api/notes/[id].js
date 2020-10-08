@@ -1,5 +1,5 @@
-import withAuth from 'middleware/auth';
-import Note from 'models/Note';
+import withAuth from 'src/middleware/auth';
+import Note from 'src/models/Note';
 
 const handler = async (req, res) => {
   const {
