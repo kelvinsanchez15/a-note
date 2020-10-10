@@ -1,3 +1,3 @@
 node_modules
 pages/_app.js
-components/Link.js
+src/components/Link.js

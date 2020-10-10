@@ -9,7 +9,7 @@ export default function Home() {
       </Head>
 
       <main>
-        <h1>Welcome to my app</h1>
+        <h1>Aqui estaran las notas</h1>
       </main>
     </div>
   );
