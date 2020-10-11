@@ -1,8 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import useUser from 'src/utils/useUser';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { Container, TextField, Typography, Button } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+
+const initialValues = {
+  username: '',
+  password: '',
+};
+
+const validationSchema = Yup.object({
+  username: Yup.string().required('Required'),
+  password: Yup.string().required('Required'),
+});
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,57 +26,87 @@ export default function LoginPage() {
     if (user) router.push('/profile');
   }, [router, user]);
 
-  async function onSubmit(e) {
-    e.preventDefault();
-    const body = {
-      username: e.currentTarget.username.value,
-      password: e.currentTarget.password.value,
-    };
-
+  async function onSubmit(values, onSubmitProps) {
     const res = await fetch('/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        username: values.username,
+        password: values.password,
+      }),
     });
 
     if (res.status === 200) {
       const userObj = await res.json();
-
+      onSubmitProps.resetForm();
       mutate(userObj);
     } else {
       setErrorMsg('Incorrect username or password. Try again!');
     }
   }
 
+  const formik = useFormik({
+    initialValues,
+    onSubmit,
+    validationSchema,
+  });
+
+  const { errors, touched, handleSubmit, getFieldProps } = formik;
+
   return (
     <>
       <Head>
         <title>Sign in</title>
       </Head>
-      <h2>Sign in</h2>
-      <form onSubmit={onSubmit}>
-        {errorMsg ? <p style={{ color: 'red' }}>{errorMsg}</p> : null}
-        <label htmlFor="name">
-          <input
+
+      <Container maxWidth="sm">
+        {errorMsg ? <Alert severity="error">{errorMsg}</Alert> : null}
+
+        <Typography component="h2" variant="h3" align="center" gutterBottom>
+          Sign in
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+          <TextField
+            fullWidth
             id="username"
-            type="name"
             name="username"
-            placeholder="Username"
+            label="Username"
+            autoComplete="username"
+            variant="outlined"
+            color="primary"
+            {...getFieldProps('username')}
+            error={errors.username && Boolean(touched.username)}
+            helperText={
+              touched.username && errors.username ? errors.username : ' '
+            }
           />
-        </label>
-        <label htmlFor="password">
-          <input
+          <TextField
+            fullWidth
             id="password"
-            type="password"
             name="password"
-            placeholder="Password"
+            label="Password"
+            autoComplete="current-password"
+            type="password"
+            variant="outlined"
+            color="primary"
+            {...getFieldProps('password')}
+            error={errors.password && Boolean(touched.password)}
+            helperText={
+              touched.password && errors.password ? errors.password : ' '
+            }
           />
-        </label>
-        <button type="submit">Sign in</button>
-        <Link href="/forget-password">
-          <a>Forget password</a>
-        </Link>
-      </form>
+          <Button
+            fullWidth
+            type="submit"
+            variant="outlined"
+            color="primary"
+            size="large"
+          >
+            Sign in
+          </Button>
+        </form>
+      </Container>
     </>
   );
 }
