@@ -1,6 +1,10 @@
 import Head from 'next/head';
+import useNotes from 'src/utils/useNotes';
+import { Container, List, ListItem, ListItemText } from '@material-ui/core';
 
 export default function Home() {
+  const { notes } = useNotes();
+
   return (
     <div>
       <Head>
@@ -9,7 +13,21 @@ export default function Home() {
       </Head>
 
       <main>
-        <h1>Aqui estaran las notas</h1>
+        <Container>
+          <h1>Notes</h1>
+          <List>
+            {notes?.map((note) => {
+              return (
+                <ListItem key={note._id}>
+                  <ListItemText
+                    primary={note.title}
+                    secondary={note.description}
+                  />
+                </ListItem>
+              );
+            })}
+          </List>
+        </Container>
       </main>
     </div>
   );
