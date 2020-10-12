@@ -6,11 +6,11 @@ export default function useUser() {
   const { data, mutate, error } = useSWR('/api/users/profile', fetcher);
 
   const loading = !data && !error;
-  const loggedOut = error && error.status === 401;
+  const isLoggedOut = !data && error?.status === 404;
 
   return {
     loading,
-    loggedOut,
+    error: isLoggedOut ? null : error,
     user: data?.data,
     mutate,
   };
