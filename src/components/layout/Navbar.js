@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   navItem: {
-    marginRight: theme.spacing(2),
+    marginLeft: theme.spacing(2),
   },
 }));
 
