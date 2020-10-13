@@ -16,10 +16,10 @@ const handler = async (req, res) => {
       break;
     case 'GET':
       try {
-        const { title, description, limit, skip, sortBy } = req.query;
+        const { description, completed, limit, skip, sortBy } = req.query;
         const match = {
-          ...(title && { title }),
           ...(description && { description }),
+          ...(completed && { completed }),
         };
         const sort = {};
 

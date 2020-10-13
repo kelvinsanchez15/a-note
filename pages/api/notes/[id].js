@@ -28,11 +28,11 @@ const handler = async (req, res) => {
           return;
         }
 
-        const { title, description } = req.body;
+        const { description, completed } = req.body;
 
         const updates = {
-          ...(title && { title }),
           ...(description && { description }),
+          ...(completed && { completed }),
         };
 
         Object.keys(updates).forEach((update) => {
