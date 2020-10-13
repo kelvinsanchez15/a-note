@@ -1,26 +1,16 @@
-import { useState } from 'react';
 import Head from 'next/head';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+import Notes from 'src/components/Notes';
 import useNotes from 'src/utils/useNotes';
 import {
   Container,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  Checkbox,
   TextField,
   Typography,
   IconButton,
   InputAdornment,
 } from '@material-ui/core';
-import {
-  Delete as DeleteIcon,
-  Send as SendIcon,
-  Create as CreateIcon,
-} from '@material-ui/icons';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
+import { Send as SendIcon, Create as CreateIcon } from '@material-ui/icons';
 
 const initialValues = {
   description: '',
@@ -32,11 +22,6 @@ const validationSchema = Yup.object({
 
 export default function Home() {
   const { notes, mutate } = useNotes();
-  const [checked, setChecked] = useState([0]);
-
-  const handleToggle = (value) => () => {
-    // TODO
-  };
 
   async function onSubmit(values, onSubmitProps) {
     const res = await fetch('/api/notes', {
@@ -113,35 +98,7 @@ export default function Home() {
               }
             />
           </form>
-
-          <List>
-            {notes?.map((note) => {
-              return (
-                <ListItem
-                  key={note._id}
-                  role={undefined}
-                  dense
-                  button
-                  onClick={handleToggle(note._id)}
-                >
-                  <ListItemIcon>
-                    <Checkbox
-                      edge="start"
-                      checked={note.completed}
-                      disableRipple
-                      tabIndex={-1}
-                    />
-                  </ListItemIcon>
-                  <ListItemText id={note._id} primary={note.description} />
-                  <ListItemSecondaryAction>
-                    <IconButton edge="end" aria-label="delete">
-                      <DeleteIcon />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-              );
-            })}
-          </List>
+          <Notes notes={notes} mutate={mutate} />
         </Container>
       </main>
     </div>
