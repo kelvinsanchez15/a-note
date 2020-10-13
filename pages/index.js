@@ -69,6 +69,7 @@ export default function Home() {
               name="description"
               label="Description"
               placeholder="Enter a note"
+              autoComplete="off"
               variant="outlined"
               color="primary"
               {...getFieldProps('description')}
