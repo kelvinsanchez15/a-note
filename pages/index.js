@@ -1,34 +1,29 @@
+import { useState } from 'react';
 import Head from 'next/head';
-import * as Yup from 'yup';
-import { useFormik } from 'formik';
 import Notes from 'src/components/Notes';
 import useNotes from 'src/utils/useNotes';
 import {
   Container,
   TextField,
-  Typography,
   IconButton,
   InputAdornment,
 } from '@material-ui/core';
 import { Send as SendIcon, Create as CreateIcon } from '@material-ui/icons';
 
-const initialValues = {
-  description: '',
-};
-
-const validationSchema = Yup.object({
-  description: Yup.string().min(1, 'Bruh!').max(60, 'Too Long!'),
-});
-
 export default function Home() {
   const { notes, mutate } = useNotes();
+  const [newNote, setNewNote] = useState('');
 
-  async function onSubmit(values, onSubmitProps) {
+  const handleChange = (event) => setNewNote(event.target.value);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     const res = await fetch('/api/notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        description: values.description,
+        description: newNote,
       }),
     });
 
@@ -37,17 +32,9 @@ export default function Home() {
       throw new Error(error.message);
     }
 
+    setNewNote('');
     mutate();
-    onSubmitProps.resetForm();
-  }
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-  });
-
-  const { errors, touched, handleSubmit, getFieldProps } = formik;
+  };
 
   return (
     <div>
@@ -58,21 +45,19 @@ export default function Home() {
 
       <main>
         <Container maxWidth="sm">
-          <Typography component="h2" variant="h3" align="center" gutterBottom>
-            Notes
-          </Typography>
-
           <form onSubmit={handleSubmit}>
             <TextField
-              fullWidth
               id="description"
               name="description"
               label="Description"
-              placeholder="Enter a note"
+              placeholder="Enter a new note"
               autoComplete="off"
               variant="outlined"
               color="primary"
-              {...getFieldProps('description')}
+              margin="normal"
+              fullWidth
+              value={newNote}
+              onChange={handleChange}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -91,12 +76,6 @@ export default function Home() {
                   </InputAdornment>
                 ),
               }}
-              error={errors.description && Boolean(touched.description)}
-              helperText={
-                touched.description && errors.description
-                  ? errors.description
-                  : ' '
-              }
             />
           </form>
           <Notes notes={notes} mutate={mutate} />
