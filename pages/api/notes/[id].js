@@ -32,7 +32,7 @@ const handler = async (req, res) => {
 
         const updates = {
           ...(description && { description }),
-          ...(completed && { completed }),
+          ...(completed !== null && { completed }),
         };
 
         Object.keys(updates).forEach((update) => {
