@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import Head from 'next/head';
 import useNotes from 'src/utils/useNotes';
 import {
@@ -5,32 +6,43 @@ import {
   List,
   ListItem,
   ListItemText,
+  ListItemIcon,
+  ListItemSecondaryAction,
+  Checkbox,
   TextField,
   Typography,
-  Button,
+  IconButton,
+  InputAdornment,
 } from '@material-ui/core';
+import {
+  Delete as DeleteIcon,
+  Send as SendIcon,
+  Create as CreateIcon,
+} from '@material-ui/icons';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
 const initialValues = {
-  title: '',
   description: '',
 };
 
 const validationSchema = Yup.object({
-  title: Yup.string().required('Required').max(60, 'Too Long!'),
-  description: Yup.string().required('Required').max(250, 'Too Long!'),
+  description: Yup.string().min(1, 'Bruh!').max(60, 'Too Long!'),
 });
 
 export default function Home() {
   const { notes, mutate } = useNotes();
+  const [checked, setChecked] = useState([0]);
+
+  const handleToggle = (value) => () => {
+    // TODO
+  };
 
   async function onSubmit(values, onSubmitProps) {
     const res = await fetch('/api/notes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        title: values.title,
         description: values.description,
       }),
     });
@@ -50,14 +62,7 @@ export default function Home() {
     validationSchema,
   });
 
-  const {
-    errors,
-    touched,
-    handleSubmit,
-    getFieldProps,
-    values,
-    handleChange,
-  } = formik;
+  const { errors, touched, handleSubmit, getFieldProps } = formik;
 
   return (
     <div>
@@ -71,34 +76,35 @@ export default function Home() {
           <Typography component="h2" variant="h3" align="center" gutterBottom>
             Notes
           </Typography>
+
           <form onSubmit={handleSubmit}>
             <TextField
-              fullWidth
-              id="title"
-              name="title"
-              label="Title"
-              autoComplete="title"
-              variant="outlined"
-              color="primary"
-              {...getFieldProps('title')}
-              error={errors.title && Boolean(touched.title)}
-              helperText={touched.title && errors.title ? errors.title : ' '}
-            />
-            <TextField
-              multiline
-              rows={5}
               fullWidth
               id="description"
               name="description"
               label="Description"
-              autoComplete="description"
-              type="description"
+              placeholder="Enter a note"
               variant="outlined"
               color="primary"
-              onChange={handleChange}
-              value={values.description}
-              placeholder="Feel free to include any details."
               {...getFieldProps('description')}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <CreateIcon />
+                  </InputAdornment>
+                ),
+                endAdornment: (
+                  <InputAdornment position="start">
+                    <IconButton
+                      type="submit"
+                      aria-label="submit note"
+                      color="primary"
+                    >
+                      <SendIcon />
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              }}
               error={errors.description && Boolean(touched.description)}
               helperText={
                 touched.description && errors.description
@@ -106,25 +112,32 @@ export default function Home() {
                   : ' '
               }
             />
-            <Button
-              fullWidth
-              type="submit"
-              variant="outlined"
-              color="primary"
-              size="large"
-            >
-              Post
-            </Button>
           </form>
 
           <List>
             {notes?.map((note) => {
               return (
-                <ListItem key={note._id}>
-                  <ListItemText
-                    primary={note.title}
-                    secondary={note.description}
-                  />
+                <ListItem
+                  key={note._id}
+                  role={undefined}
+                  dense
+                  button
+                  onClick={handleToggle(note._id)}
+                >
+                  <ListItemIcon>
+                    <Checkbox
+                      edge="start"
+                      checked={note.completed}
+                      disableRipple
+                      tabIndex={-1}
+                    />
+                  </ListItemIcon>
+                  <ListItemText id={note._id} primary={note.description} />
+                  <ListItemSecondaryAction>
+                    <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon />
+                    </IconButton>
+                  </ListItemSecondaryAction>
                 </ListItem>
               );
             })}
