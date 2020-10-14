@@ -9,6 +9,7 @@ import {
   InputAdornment,
 } from '@material-ui/core';
 import { Send as SendIcon, Create as CreateIcon } from '@material-ui/icons';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
   const { notes, mutate } = useNotes();
@@ -19,21 +20,60 @@ export default function Home() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const res = await fetch('/api/notes', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        description: newNote,
-      }),
-    });
+    const clientNote = {
+      _id: uuidv4(),
+      description: newNote,
+      clientOnly: true,
+    };
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      throw new Error(error.message);
-    }
-
+    // Optimistic update
+    mutate((cacheData) => {
+      return {
+        ...cacheData,
+        data: [clientNote, ...cacheData.data],
+      };
+    }, false);
     setNewNote('');
-    mutate();
+
+    // Save changes to the server
+    try {
+      const res = await fetch('/api/notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          description: newNote,
+        }),
+      });
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error.message);
+      }
+
+      const json = await res.json();
+
+      // Validate cache data with server response
+      mutate((cacheData) => {
+        return {
+          ...cacheData,
+          data: cacheData.data.map((note) =>
+            note._id === clientNote._id ? json.data : note
+          ),
+        };
+      }, false);
+    } catch (error) {
+      // Append error to failed note
+      mutate((cacheData) => {
+        return {
+          ...cacheData,
+          data: cacheData.data.map((note) =>
+            note._id === clientNote._id
+              ? { ...note, errorMsg: error.message }
+              : note
+          ),
+        };
+      }, false);
+    }
   };
 
   return (

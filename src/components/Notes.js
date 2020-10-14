@@ -43,13 +43,15 @@ export default function Notes({ notes, mutate }) {
 
   return (
     <List>
-      {notes?.map((note) => {
+      {notes?.data.map((note) => {
         return (
           <ListItem
             key={note._id}
             role={undefined}
             dense
             button
+            disabled={note.clientOnly}
+            style={note.errorMsg ? { color: 'red' } : null}
             onClick={handleToggle(note._id, note.completed)}
           >
             <ListItemIcon>
@@ -60,12 +62,16 @@ export default function Notes({ notes, mutate }) {
                 tabIndex={-1}
               />
             </ListItemIcon>
-            <ListItemText id={note._id} primary={note.description} />
+            <ListItemText
+              id={note._id}
+              primary={note.errorMsg || note.description}
+            />
             <ListItemSecondaryAction>
               <IconButton
                 edge="end"
                 aria-label="delete"
                 onClick={handleDelete(note._id)}
+                disabled={note.clientOnly}
               >
                 <DeleteIcon />
               </IconButton>
