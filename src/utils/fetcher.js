@@ -1,5 +1,3 @@
-export default async function fetcher(url) {
-  const response = await fetch(url);
-  if (!response.ok) throw new Error(response.statusText);
-  return await response.json();
-}
+const fetcher = (...args) => fetch(...args).then((res) => res.json());
+
+export default fetcher;

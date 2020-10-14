@@ -13,7 +13,7 @@ export default function useNotes() {
   return {
     loading,
     error,
-    notes: data?.data,
+    notes: data,
     mutate,
   };
 }
