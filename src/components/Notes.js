@@ -10,6 +10,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
+import { formatRelative } from 'date-fns';
 
 export default function Notes({ notes, mutate }) {
   const handleToggle = (_id, completed) => async () => {
@@ -72,8 +73,13 @@ export default function Notes({ notes, mutate }) {
                   color="textSecondary"
                   display="block"
                 >
-                  {note.updatedAt ? note.updatedAt : 'just now'}
+                  {note.updatedAt
+                    ? formatRelative(new Date(note.updatedAt), new Date(), {
+                        addSuffix: true,
+                      })
+                    : 'today at'}
                 </Typography>
+
                 <Typography variant="body1" display="block">
                   {note.errorMsg || note.description}
                 </Typography>
