@@ -100,16 +100,21 @@ export default function Home() {
               onChange={handleChange}
               InputProps={{
                 startAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment
+                    position="start"
+                    disablePointerEvents
+                    style={{ minWidth: '50px' }}
+                  >
                     <CreateIcon />
                   </InputAdornment>
                 ),
                 endAdornment: (
-                  <InputAdornment position="start">
+                  <InputAdornment position="end">
                     <IconButton
                       type="submit"
                       aria-label="submit note"
                       color="primary"
+                      edge="end"
                     >
                       <SendIcon />
                     </IconButton>
