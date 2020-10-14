@@ -6,6 +6,8 @@ import {
   ListItemSecondaryAction,
   Checkbox,
   IconButton,
+  Divider,
+  Typography,
 } from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
 
@@ -45,38 +47,51 @@ export default function Notes({ notes, mutate }) {
     <List>
       {notes?.data.map((note) => {
         return (
-          <ListItem
-            key={note._id}
-            role={undefined}
-            dense
-            button
-            disabled={note.clientOnly}
-            style={note.errorMsg ? { color: 'red' } : null}
-            onClick={handleToggle(note._id, note.completed)}
-          >
-            <ListItemIcon>
-              <Checkbox
-                edge="start"
-                checked={note.completed}
-                disableRipple
-                tabIndex={-1}
-              />
-            </ListItemIcon>
-            <ListItemText
-              id={note._id}
-              primary={note.errorMsg || note.description}
-            />
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                aria-label="delete"
-                onClick={handleDelete(note._id)}
-                disabled={note.clientOnly}
-              >
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+          <>
+            <ListItem
+              key={note._id}
+              role={undefined}
+              dense
+              button
+              disabled={note.clientOnly}
+              style={note.errorMsg ? { color: 'red' } : null}
+              onClick={handleToggle(note._id, note.completed)}
+            >
+              <ListItemIcon>
+                <Checkbox
+                  edge="start"
+                  checked={note.completed}
+                  disableRipple
+                  tabIndex={-1}
+                />
+              </ListItemIcon>
+
+              <ListItemText id={note._id} disableTypography>
+                <Typography
+                  variant="caption"
+                  color="textSecondary"
+                  display="block"
+                >
+                  {note.updatedAt ? note.updatedAt : 'just now'}
+                </Typography>
+                <Typography variant="body1" display="block">
+                  {note.errorMsg || note.description}
+                </Typography>
+              </ListItemText>
+
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  aria-label="delete"
+                  onClick={handleDelete(note._id)}
+                  disabled={note.clientOnly}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+            <Divider component="li" />
+          </>
         );
       })}
     </List>
