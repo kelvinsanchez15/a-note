@@ -1,5 +1,12 @@
 import { makeStyles } from '@material-ui/core/styles';
-import { AppBar, Toolbar, Typography, Button } from '@material-ui/core';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Button,
+  IconButton,
+  Avatar,
+} from '@material-ui/core';
 import Link from 'src/components/Link';
 import useUser from 'src/utils/useUser';
 
@@ -50,14 +57,10 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              <Link
-                className={classes.navItem}
-                href="/profile"
-                color="inherit"
-                variant="button"
-              >
-                Profile
-              </Link>
+              <IconButton edge="end" href="/profile">
+                <Avatar alt="Kelvin" src={user.profileImg} />
+              </IconButton>
+
               <Button
                 className={classes.navItem}
                 onClick={handleLogout}
