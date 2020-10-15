@@ -23,7 +23,7 @@ export default function LoginPage() {
   const { user, mutate } = useUser();
   useEffect(() => {
     // redirect to home if user is authenticated
-    if (user) router.push('/profile');
+    if (user) router.push('/');
   }, [router, user]);
 
   async function onSubmit(values, onSubmitProps) {
