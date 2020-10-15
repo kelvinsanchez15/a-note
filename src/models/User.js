@@ -30,6 +30,9 @@ const UserSchema = new mongoose.Schema(
       maxlength: [254, 'Password cannot be more than 254 characters'],
       trim: true,
     },
+    profileImage: {
+      type: String,
+    },
     tokens: [String],
   },
   { timestamps: true }

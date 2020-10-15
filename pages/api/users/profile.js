@@ -1,5 +1,6 @@
 import withAuth from 'src/middleware/auth';
 import normalizeEmail from 'validator/lib/normalizeEmail';
+import cloudinary from 'src/utils/cloudinary';
 
 const handler = async (req, res) => {
   const { method } = req;
@@ -14,13 +15,26 @@ const handler = async (req, res) => {
       break;
     case 'PATCH':
       try {
-        const { username, email, password } = req.body;
+        const { username, email, password, image } = req.body;
         const { user } = req;
         const updates = {
           ...(username && { username }),
           ...(email && { email: normalizeEmail(email) }),
           ...(password && { password }),
         };
+
+        if (image) {
+          const uploadedImage = await cloudinary.uploader.upload(image, {
+            width: 120,
+            height: 120,
+            crop: 'fill',
+            public_id: user._id,
+            folder: 'a-note',
+            format: 'jpg',
+          });
+
+          updates.profileImage = uploadedImage.secure_url;
+        }
 
         Object.keys(updates).forEach((update) => {
           user[update] = updates[update];

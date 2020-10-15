@@ -12,6 +12,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "bcrypt": "^5.0.0",
+    "cloudinary": "^1.23.0",
     "clsx": "^1.1.1",
     "cookie": "^0.4.1",
     "date-fns": "^2.16.1",
