@@ -57,15 +57,11 @@ export default function ProfilePage() {
   };
 
   const uploadImage = async (base64EncodedImage) => {
-    try {
-      await fetch('/api/users/profile', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: base64EncodedImage }),
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    await fetch('/api/users/profile', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ image: base64EncodedImage }),
+    });
   };
 
   const handleSubmitFile = (e) => {
