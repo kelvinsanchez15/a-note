@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/router';
 import Head from 'next/head';
 import Notes from 'src/components/Notes';
+import useUser from 'src/utils/useUser';
 import useNotes from 'src/utils/useNotes';
 import {
   Container,
@@ -12,8 +14,15 @@ import { Send as SendIcon, Create as CreateIcon } from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
-  const { notes, mutate } = useNotes();
+  const router = useRouter();
+  const { user } = useUser();
+  const { notes, loading, mutate } = useNotes(user);
   const [newNote, setNewNote] = useState('');
+
+  useEffect(() => {
+    // redirect to login if user is unauthenticated
+    if (!user) router.replace('/login');
+  }, [router, user]);
 
   const handleChange = (event) => setNewNote(event.target.value);
 
@@ -76,15 +85,19 @@ export default function Home() {
     }
   };
 
+  if (!user) {
+    return 'redirecting to login page';
+  }
+
   return (
-    <div>
+    <>
       <Head>
         <title>A-note | A simple note-taking app</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main>
-        <Container maxWidth="sm">
+      <Container maxWidth="sm">
+        <>
           <form onSubmit={handleSubmit}>
             <TextField
               id="description"
@@ -96,6 +109,7 @@ export default function Home() {
               color="primary"
               margin="normal"
               fullWidth
+              disabled={loading}
               value={newNote}
               onChange={handleChange}
               InputProps={{
@@ -115,6 +129,7 @@ export default function Home() {
                       aria-label="submit note"
                       color="primary"
                       edge="end"
+                      disabled={loading}
                     >
                       <SendIcon />
                     </IconButton>
@@ -123,9 +138,9 @@ export default function Home() {
               }}
             />
           </form>
-          <Notes notes={notes} mutate={mutate} />
-        </Container>
-      </main>
-    </div>
+          <Notes notes={notes} mutate={mutate} loading={loading} />
+        </>
+      </Container>
+    </>
   );
 }

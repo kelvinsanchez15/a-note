@@ -2,9 +2,9 @@ import useSWR from 'swr';
 
 import fetcher from './fetcher';
 
-export default function useNotes() {
+export default function useNotes(user) {
   const { data, mutate, error } = useSWR(
-    '/api/notes?sortBy=createdAt:desc',
+    user ? '/api/notes?sortBy=createdAt:desc' : null,
     fetcher
   );
 
