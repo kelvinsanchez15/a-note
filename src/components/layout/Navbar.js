@@ -9,6 +9,8 @@ import {
 } from '@material-ui/core';
 import Link from 'src/components/Link';
 import useUser from 'src/utils/useUser';
+import useNotes from 'src/utils/useNotes';
+import { cache } from 'swr';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -21,13 +23,18 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Navbar() {
   const classes = useStyles();
-  const { user, mutate } = useUser();
+  const { user, mutate: mutateUser } = useUser();
+  const { mutate: mutateNotes } = useNotes();
+
   const handleLogout = async () => {
     await fetch('/api/users/logout', {
       method: 'POST',
     });
-    mutate(null);
+    mutateNotes(null);
+    mutateUser(null);
+    cache.clear();
   };
+
   return (
     <nav>
       <AppBar position="fixed" color="primary">
