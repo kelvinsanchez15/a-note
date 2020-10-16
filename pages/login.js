@@ -71,6 +71,7 @@ export default function LoginPage() {
   }, [router, user]);
 
   async function onSubmit(values) {
+    setError(false);
     const res = await fetch('/api/users/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -83,7 +84,6 @@ export default function LoginPage() {
     if (res.status === 200) {
       const userObj = await res.json();
       mutate(userObj);
-      setError(false);
     } else {
       setError(true);
     }
