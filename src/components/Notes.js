@@ -9,9 +9,10 @@ import {
   Typography,
 } from '@material-ui/core';
 import { Delete as DeleteIcon } from '@material-ui/icons';
+import { Skeleton } from '@material-ui/lab';
 import { formatRelative } from 'date-fns';
 
-export default function Notes({ notes, mutate }) {
+export default function Notes({ notes, loading, mutate }) {
   const handleToggle = (_id, completed) => async () => {
     const res = await fetch(`/api/notes/${_id}`, {
       method: 'PATCH',
@@ -42,6 +43,41 @@ export default function Notes({ notes, mutate }) {
 
     mutate();
   };
+
+  if (loading) {
+    return (
+      <List>
+        {Array.from(new Array(8)).map((e, i) => (
+          // eslint-disable-next-line react/no-array-index-key
+          <ListItem key={i} dense button divider>
+            <ListItemIcon>
+              <Checkbox edge="start" disabled />
+            </ListItemIcon>
+
+            <ListItemText disableTypography>
+              <Typography
+                variant="caption"
+                color="textSecondary"
+                display="block"
+              >
+                <Skeleton />
+              </Typography>
+
+              <Typography variant="body1" display="block">
+                <Skeleton />
+              </Typography>
+            </ListItemText>
+
+            <ListItemSecondaryAction>
+              <IconButton edge="end" disabled>
+                <DeleteIcon />
+              </IconButton>
+            </ListItemSecondaryAction>
+          </ListItem>
+        ))}
+      </List>
+    );
+  }
 
   return (
     <List>
