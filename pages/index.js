@@ -15,14 +15,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 export default function Home() {
   const router = useRouter();
-  const { user } = useUser();
-  const { notes, loading, mutate } = useNotes(user);
+  const { user, loading: loadingUser } = useUser();
+  const { notes, loading: loadingNotes, mutate } = useNotes(user);
   const [newNote, setNewNote] = useState('');
-
-  useEffect(() => {
-    // redirect to login if user is unauthenticated
-    if (!user) router.replace('/login');
-  }, [router, user]);
 
   const handleChange = (event) => setNewNote(event.target.value);
 
@@ -85,9 +80,13 @@ export default function Home() {
     }
   };
 
-  if (!user) {
-    return 'redirecting to login page';
-  }
+  // if logged out, redirect to the homepage
+  useEffect(() => {
+    if (!(user || loadingUser)) {
+      router.push('/login');
+    }
+  }, [user, loadingUser, router]);
+  if (!(user || loadingUser)) return 'redirecting...';
 
   return (
     <>
@@ -109,7 +108,7 @@ export default function Home() {
               color="primary"
               margin="normal"
               fullWidth
-              disabled={loading}
+              disabled={loadingNotes}
               value={newNote}
               onChange={handleChange}
               InputProps={{
@@ -129,7 +128,7 @@ export default function Home() {
                       aria-label="submit note"
                       color="primary"
                       edge="end"
-                      disabled={loading}
+                      disabled={loadingNotes}
                     >
                       <SendIcon />
                     </IconButton>
@@ -138,7 +137,7 @@ export default function Home() {
               }}
             />
           </form>
-          <Notes notes={notes} mutate={mutate} loading={loading} />
+          <Notes notes={notes} mutate={mutate} loadingNotes={loadingNotes} />
         </>
       </Container>
     </>

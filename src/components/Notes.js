@@ -12,7 +12,7 @@ import { Delete as DeleteIcon } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import { formatRelative } from 'date-fns';
 
-export default function Notes({ notes, loading, mutate }) {
+export default function Notes({ notes, loadingNotes, mutate }) {
   const handleToggle = (_id, completed) => async () => {
     const res = await fetch(`/api/notes/${_id}`, {
       method: 'PATCH',
@@ -44,7 +44,7 @@ export default function Notes({ notes, loading, mutate }) {
     mutate();
   };
 
-  if (loading) {
+  if (loadingNotes) {
     return (
       <List>
         {Array.from(new Array(8)).map((e, i) => (
