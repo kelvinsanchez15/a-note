@@ -66,7 +66,7 @@ export default function LoginPage() {
     if (user) router.push('/');
   }, [router, user]);
 
-  async function onSubmit(values) {
+  async function onSubmit(values, onSubmitProps) {
     setError(false);
     const res = await fetch('/api/users/login', {
       method: 'POST',
@@ -79,6 +79,7 @@ export default function LoginPage() {
 
     if (res.status === 200) {
       const userObj = await res.json();
+      onSubmitProps.resetForm();
       mutate(userObj);
     } else {
       setError(true);
@@ -141,7 +142,6 @@ export default function LoginPage() {
                 touched.password && errors.password ? errors.password : ' '
               }
               InputProps={{
-                // <-- This is where the toggle button is added.
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
