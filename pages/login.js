@@ -9,10 +9,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import {
   Container,
   TextField,
-  FormControl,
-  OutlinedInput,
-  FormHelperText,
-  InputLabel,
   Typography,
   Button,
   Avatar,
@@ -97,9 +93,8 @@ export default function LoginPage() {
 
   const { errors, touched, handleSubmit, getFieldProps } = formik;
 
-  const handleClickShowPassword = () => {
-    setShowPassword(!showPassword);
-  };
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   return (
     <>
@@ -132,38 +127,35 @@ export default function LoginPage() {
               }
             />
 
-            <FormControl
-              variant="outlined"
+            <TextField
               fullWidth
+              id="password"
+              name="password"
+              label="Password *"
+              autoComplete="current-password"
+              variant="outlined"
+              type={showPassword ? 'text' : 'password'}
               {...getFieldProps('password')}
               error={errors.password && Boolean(touched.password)}
-            >
-              <InputLabel htmlFor="outlined-adornment-password">
-                Password *
-              </InputLabel>
-              <OutlinedInput
-                id="password"
-                name="password"
-                autoComplete="current-password"
-                type={showPassword ? 'text' : 'password'}
-                endAdornment={
-                  // eslint-disable-next-line react/jsx-wrap-multilines
+              helperText={
+                touched.password && errors.password ? errors.password : ' '
+              }
+              InputProps={{
+                // <-- This is where the toggle button is added.
+                endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
                       aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
                       edge="end"
+                      onClick={handleClickShowPassword}
+                      onMouseDown={handleMouseDownPassword}
                     >
                       {showPassword ? <Visibility /> : <VisibilityOff />}
                     </IconButton>
                   </InputAdornment>
-                }
-                label="Password *"
-              />
-              <FormHelperText>
-                {touched.password && errors.password ? errors.password : ' '}
-              </FormHelperText>
-            </FormControl>
+                ),
+              }}
+            />
 
             <Button
               type="submit"
