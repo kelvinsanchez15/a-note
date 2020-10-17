@@ -31,12 +31,13 @@ export default function Home() {
     };
 
     // Optimistic update
-    mutate((cacheData) => {
-      return {
+    mutate(
+      (cacheData) => ({
         ...cacheData,
         data: [clientNote, ...cacheData.data],
-      };
-    }, false);
+      }),
+      false
+    );
     setNewNote('');
 
     // Save changes to the server
@@ -57,26 +58,28 @@ export default function Home() {
       const json = await res.json();
 
       // Validate cache data with server response
-      mutate((cacheData) => {
-        return {
+      mutate(
+        (cacheData) => ({
           ...cacheData,
           data: cacheData.data.map((note) =>
             note._id === clientNote._id ? json.data : note
           ),
-        };
-      }, false);
+        }),
+        false
+      );
     } catch (error) {
       // Append error to failed note
-      mutate((cacheData) => {
-        return {
+      mutate(
+        (cacheData) => ({
           ...cacheData,
           data: cacheData.data.map((note) =>
             note._id === clientNote._id
               ? { ...note, errorMsg: error.message }
               : note
           ),
-        };
-      }, false);
+        }),
+        false
+      );
     }
   };
 
