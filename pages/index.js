@@ -40,8 +40,8 @@ export default function Home() {
     );
     setNewNote('');
 
-    // Save changes to the server
     try {
+      // Save changes to the server
       const res = await fetch('/api/notes', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -74,7 +74,7 @@ export default function Home() {
           ...cacheData,
           data: cacheData.data.map((note) =>
             note._id === clientNote._id
-              ? { ...note, errorMsg: error.message }
+              ? { ...note, errorMsg: "Couldn't save, please try again!" }
               : note
           ),
         }),
