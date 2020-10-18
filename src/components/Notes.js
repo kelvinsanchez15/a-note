@@ -14,34 +14,86 @@ import { formatRelative } from 'date-fns';
 
 export default function Notes({ notes, loadingNotes, mutate }) {
   const handleToggle = (_id, completed) => async () => {
-    const res = await fetch(`/api/notes/${_id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        completed: !completed,
+    // Optimistic update
+    mutate(
+      (cacheData) => ({
+        ...cacheData,
+        data: cacheData.data.map((note) =>
+          note._id === _id
+            ? { ...note, completed: !completed, updatedAt: new Date() }
+            : note
+        ),
       }),
-    });
+      false
+    );
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      throw new Error(error.message);
+    try {
+      // Save changes to the server
+      const res = await fetch(`/api/notes/${_id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          completed: !completed,
+        }),
+      });
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      // Append error to failed note
+      mutate(
+        (cacheData) => ({
+          ...cacheData,
+          data: notes.data.map((note) =>
+            note._id === _id
+              ? { ...note, errorMsg: "Couldn't update, please try again!" }
+              : note
+          ),
+        }),
+        false
+      );
     }
-
-    mutate();
   };
 
-  const handleDelete = (_id) => async () => {
-    const res = await fetch(`/api/notes/${_id}`, {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-    });
+  const handleDelete = (_id, index) => async () => {
+    // Optimistic update
+    mutate(
+      (cacheData) => ({
+        ...cacheData,
+        data: [
+          ...cacheData.data.slice(0, index),
+          ...cacheData.data.slice(index + 1),
+        ],
+      }),
+      false
+    );
 
-    if (!res.ok) {
-      const { error } = await res.json();
-      throw new Error(error.message);
+    try {
+      const res = await fetch(`/api/notes/${_id}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      if (!res.ok) {
+        const { error } = await res.json();
+        throw new Error(error.message);
+      }
+    } catch (error) {
+      // Append error to failed note
+      mutate(
+        (cacheData) => ({
+          ...cacheData,
+          data: notes.data.map((note) =>
+            note._id === _id
+              ? { ...note, errorMsg: "Couldn't delete, please try again!" }
+              : note
+          ),
+        }),
+        false
+      );
     }
-
-    mutate();
   };
 
   if (loadingNotes) {
@@ -81,7 +133,7 @@ export default function Notes({ notes, loadingNotes, mutate }) {
 
   return (
     <List>
-      {notes?.data.map((note) => {
+      {notes?.data.map((note, index) => {
         return (
           <ListItem
             key={note._id}
@@ -91,7 +143,7 @@ export default function Notes({ notes, loadingNotes, mutate }) {
             divider
             disabled={note.clientOnly}
             style={note.errorMsg ? { color: 'red' } : null}
-            onClick={handleToggle(note._id, note.completed)}
+            onClick={handleToggle(note._id, note.completed, index)}
           >
             <ListItemIcon>
               <Checkbox
@@ -116,7 +168,11 @@ export default function Notes({ notes, loadingNotes, mutate }) {
               </Typography>
 
               <Typography variant="body1" display="block">
-                {note.errorMsg || note.description}
+                {note.description}
+              </Typography>
+
+              <Typography variant="caption" color="error" display="block">
+                {note.errorMsg}
               </Typography>
             </ListItemText>
 
@@ -124,7 +180,7 @@ export default function Notes({ notes, loadingNotes, mutate }) {
               <IconButton
                 edge="end"
                 aria-label="delete"
-                onClick={handleDelete(note._id)}
+                onClick={handleDelete(note._id, index)}
                 disabled={note.clientOnly}
               >
                 <DeleteIcon />
