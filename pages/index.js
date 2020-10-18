@@ -4,6 +4,7 @@ import Head from 'next/head';
 import Notes from 'src/components/Notes';
 import useUser from 'src/utils/useUser';
 import useNotes from 'src/utils/useNotes';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   Container,
   TextField,
@@ -13,7 +14,14 @@ import {
 import { Send as SendIcon, Create as CreateIcon } from '@material-ui/icons';
 import { v4 as uuidv4 } from 'uuid';
 
+const useStyles = makeStyles((theme) => ({
+  paper: {
+    marginTop: theme.spacing(3),
+  },
+}));
+
 export default function Home() {
+  const classes = useStyles();
   const router = useRouter();
   const { user, loading: loadingUser } = useUser();
   const { notes, loading: loadingNotes, mutate } = useNotes(user);
@@ -98,8 +106,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Container maxWidth="sm">
-        <>
+      <Container maxWidth="sm" component="main">
+        <div className={classes.paper}>
           <form onSubmit={handleSubmit}>
             <TextField
               id="description"
@@ -109,7 +117,6 @@ export default function Home() {
               autoComplete="off"
               variant="outlined"
               color="primary"
-              margin="normal"
               fullWidth
               disabled={loadingNotes}
               value={newNote}
@@ -141,7 +148,7 @@ export default function Home() {
             />
           </form>
           <Notes notes={notes} mutate={mutate} loadingNotes={loadingNotes} />
-        </>
+        </div>
       </Container>
     </>
   );
