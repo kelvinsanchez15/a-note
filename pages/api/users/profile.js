@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import withAuth from 'src/middleware/auth';
 import normalizeEmail from 'validator/lib/normalizeEmail';
 import cloudinary from 'src/utils/cloudinary';
@@ -15,12 +16,11 @@ const handler = async (req, res) => {
       break;
     case 'PATCH':
       try {
-        const { username, email, password, image } = req.body;
+        const { username, email, password, newPassword, image } = req.body;
         const { user } = req;
         const updates = {
           ...(username && { username }),
           ...(email && { email: normalizeEmail(email) }),
-          ...(password && { password }),
         };
 
         if (image) {
@@ -33,7 +33,18 @@ const handler = async (req, res) => {
             format: 'jpg',
           });
 
-          updates.profileImage = uploadedImage.secure_url;
+          user.profileImage = uploadedImage.secure_url;
+          await user.save();
+          res.status(200).json({ success: true, data: user });
+          return;
+        }
+
+        if (password && newPassword) {
+          const isMatch = await bcrypt.compare(password, user.password);
+          if (!isMatch) {
+            throw new Error('Unable to save, Incorrect password');
+          }
+          updates.password = newPassword;
         }
 
         Object.keys(updates).forEach((update) => {
