@@ -3,12 +3,12 @@ import Head from 'next/head';
 import { useRouter } from 'next/router';
 import useUser from 'src/utils/useUser';
 import Link from 'src/components/Link';
-import { useFormik } from 'formik';
+import { Formik, Form, Field } from 'formik';
+import { TextField } from 'formik-material-ui';
 import * as Yup from 'yup';
 import { makeStyles } from '@material-ui/core/styles';
 import {
   Container,
-  TextField,
   Typography,
   Button,
   Avatar,
@@ -16,6 +16,7 @@ import {
   Snackbar,
   InputAdornment,
   IconButton,
+  CircularProgress,
 } from '@material-ui/core';
 import {
   LockOutlined as LockOutlinedIcon,
@@ -39,66 +40,33 @@ const useStyles = makeStyles((theme) => ({
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
-  submit: {
+  submitWrapper: {
     margin: theme.spacing(1, 0, 2),
+    position: 'relative',
+  },
+  buttonProgress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
   },
 }));
-
-const initialValues = {
-  username: '',
-  email: '',
-  password: '',
-};
-
-const validationSchema = Yup.object({
-  username: Yup.string().required('Required'),
-  email: Yup.string().email('Invalid email format').required('Required'),
-  password: Yup.string().required('Required'),
-});
 
 export default function LoginPage() {
   const classes = useStyles();
   const router = useRouter();
-  const [error, setError] = useState(false);
   const { user, mutate } = useUser();
+  const [errorAlert, setErrorAlert] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   // redirect to home if user is authenticated
   useEffect(() => {
     if (user) router.push('/');
   }, [router, user]);
-
-  async function onSubmit(values, onSubmitProps) {
-    setError(false);
-    const res = await fetch('/api/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        username: values.username,
-        email: values.email,
-        password: values.password,
-      }),
-    });
-
-    if (res.status === 201) {
-      const userObj = await res.json();
-      onSubmitProps.resetForm();
-      mutate(userObj);
-    } else {
-      setError(true);
-    }
-  }
-
-  const formik = useFormik({
-    initialValues,
-    onSubmit,
-    validationSchema,
-  });
-
-  const { errors, touched, handleSubmit, getFieldProps } = formik;
-
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = () => setShowPassword(!showPassword);
 
   return (
     <>
@@ -116,83 +84,120 @@ export default function LoginPage() {
             Sign up
           </Typography>
 
-          <form className={classes.form} onSubmit={handleSubmit}>
-            <TextField
-              fullWidth
-              id="username"
-              name="username"
-              label="Username *"
-              autoComplete="username"
-              variant="outlined"
-              {...getFieldProps('username')}
-              error={errors.username && Boolean(touched.username)}
-              helperText={
-                touched.username && errors.username ? errors.username : ' '
+          <Formik
+            initialValues={{ username: '', email: '', password: '' }}
+            validationSchema={Yup.object({
+              username: Yup.string().required('Required'),
+              email: Yup.string()
+                .email('Invalid email format')
+                .required('Required'),
+              password: Yup.string().required('Required'),
+            })}
+            onSubmit={async (values, { setSubmitting, resetForm }) => {
+              setErrorAlert(false);
+              try {
+                const res = await fetch('/api/users', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({
+                    username: values.username,
+                    email: values.email,
+                    password: values.password,
+                  }),
+                });
+                setSubmitting(false);
+                if (!res.ok) {
+                  const { error } = await res.json();
+                  throw new Error(error);
+                }
+                const userObj = await res.json();
+                resetForm();
+                mutate(userObj);
+              } catch (error) {
+                setErrorAlert(true);
               }
-            />
+            }}
+          >
+            {({ handleSubmit, isSubmitting }) => (
+              <Form onSubmit={handleSubmit} className={classes.form}>
+                <Field
+                  component={TextField}
+                  fullWidth
+                  variant="outlined"
+                  name="username"
+                  type="username"
+                  label="Username"
+                  autoComplete="username"
+                  helperText=" "
+                />
 
-            <TextField
-              fullWidth
-              id="email"
-              name="email"
-              label="Email *"
-              autoComplete="email"
-              variant="outlined"
-              {...getFieldProps('email')}
-              error={errors.email && Boolean(touched.email)}
-              helperText={touched.email && errors.email ? errors.email : ' '}
-            />
+                <Field
+                  component={TextField}
+                  fullWidth
+                  variant="outlined"
+                  name="email"
+                  type="email"
+                  label="Email"
+                  autoComplete="email"
+                  helperText=" "
+                />
 
-            <TextField
-              fullWidth
-              id="password"
-              name="password"
-              label="Password *"
-              autoComplete="new-password"
-              variant="outlined"
-              type={showPassword ? 'text' : 'password'}
-              {...getFieldProps('password')}
-              error={errors.password && Boolean(touched.password)}
-              helperText={
-                touched.password && errors.password ? errors.password : ' '
-              }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      aria-label="toggle password visibility"
-                      edge="end"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                    >
-                      {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
+                <Field
+                  component={TextField}
+                  fullWidth
+                  variant="outlined"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  label="Password"
+                  autoComplete="new-password"
+                  helperText=" "
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          aria-label="toggle password visibility"
+                          edge="end"
+                          onClick={handleClickShowPassword}
+                          onMouseDown={handleMouseDownPassword}
+                        >
+                          {showPassword ? <Visibility /> : <VisibilityOff />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  }}
+                />
 
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Sign Up
-            </Button>
+                <div className={classes.submitWrapper}>
+                  <Button
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    disabled={isSubmitting}
+                  >
+                    Sign Up
+                  </Button>
+                  {isSubmitting && (
+                    <CircularProgress
+                      size={24}
+                      className={classes.buttonProgress}
+                    />
+                  )}
+                </div>
 
-            <Grid container justify="flex-end">
-              <Grid item>
-                <Link href="/login" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
-          </form>
+                <Grid container justify="flex-end">
+                  <Grid item>
+                    <Link href="/login" variant="body2">
+                      Already have an account? Sign in
+                    </Link>
+                  </Grid>
+                </Grid>
+              </Form>
+            )}
+          </Formik>
         </div>
 
-        <Snackbar open={error}>
+        <Snackbar open={errorAlert}>
           <Alert severity="error">
             Username or Email has already been used. Try again!
           </Alert>
