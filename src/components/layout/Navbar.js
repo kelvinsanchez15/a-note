@@ -70,7 +70,7 @@ export default function Navbar() {
           ) : (
             <>
               <IconButton edge="end" href="/profile" component={Link}>
-                <Avatar alt="Kelvin" src={user.profileImage} />
+                <Avatar alt="Kelvin" src={user?.profileImage || ''} />
               </IconButton>
 
               <Button
