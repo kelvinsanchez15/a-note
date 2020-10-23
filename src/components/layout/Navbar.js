@@ -15,9 +15,14 @@ import { cache } from 'swr';
 const useStyles = makeStyles((theme) => ({
   title: {
     flexGrow: 1,
+    color: theme.palette.common.black,
   },
   navItem: {
     marginLeft: theme.spacing(2),
+    color: theme.palette.common.black,
+    '&:hover': {
+      textDecoration: 'none',
+    },
   },
 }));
 
@@ -39,28 +44,28 @@ export default function Navbar() {
     <nav>
       <AppBar position="fixed" color="primary">
         <Toolbar>
-          <Link className={classes.title} href="/" color="inherit">
-            <Typography variant="h6">A-note</Typography>
+          <Link className={classes.title} href="/">
+            <Typography variant="h6">A-Note</Typography>
           </Link>
 
           {!user ? (
             <>
-              <Link
+              <Button
                 className={classes.navItem}
                 href="/login"
-                color="inherit"
-                variant="button"
+                component={Link}
               >
                 Sign in
-              </Link>
-              <Link
+              </Button>
+              <Button
                 className={classes.navItem}
                 href="/signup"
+                variant="outlined"
                 color="inherit"
-                variant="button"
+                component={Link}
               >
                 Sign up
-              </Link>
+              </Button>
             </>
           ) : (
             <>
