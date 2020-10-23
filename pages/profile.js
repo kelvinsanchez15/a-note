@@ -72,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
 export default function ProfilePage() {
   const classes = useStyles();
   const router = useRouter();
-  const { user, loading, mutate } = useUser();
+  const { user, isLoggedOut, mutate } = useUser();
 
   const [errorAlert, setErrorAlert] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
@@ -141,16 +141,10 @@ export default function ProfilePage() {
 
   // if logged out, redirect to the homepage
   useEffect(() => {
-    if (!(user || loading)) {
-      router.push('/login');
+    if (isLoggedOut) {
+      router.replace('/login');
     }
-  }, [user, loading, router]);
-  if (!(user || loading)) return 'redirecting...';
-
-  if (loading) {
-    // TODO add skeleton or placeholder
-    return 'loading';
-  }
+  }, [isLoggedOut, router]);
 
   return (
     <>
@@ -191,7 +185,7 @@ export default function ProfilePage() {
                 }
               >
                 <Avatar
-                  src={previewSource || user.profileImage}
+                  src={previewSource || user?.profileImage}
                   className={classes.avatar}
                 />
               </Badge>

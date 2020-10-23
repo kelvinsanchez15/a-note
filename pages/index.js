@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
   const classes = useStyles();
   const router = useRouter();
-  const { user, loading: loadingUser } = useUser();
+  const { user, isLoggedOut } = useUser();
   const { notes, loading: loadingNotes, mutate } = useNotes(user);
   const [newNote, setNewNote] = useState('');
 
@@ -93,11 +93,10 @@ export default function Home() {
 
   // if logged out, redirect to the homepage
   useEffect(() => {
-    if (!(user || loadingUser)) {
-      router.push('/login');
+    if (isLoggedOut) {
+      router.replace('/login');
     }
-  }, [user, loadingUser, router]);
-  if (!(user || loadingUser)) return 'redirecting...';
+  }, [isLoggedOut, router]);
 
   return (
     <>
