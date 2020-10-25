@@ -16,7 +16,7 @@ A simple, fast and intuitive note-taking app built with NextJS JAMStack solution
 
 ## Screenshot
 
-![a-note 3 Device Mashup resized](https://user-images.githubusercontent.com/4708484/97062612-ac378080-1569-11eb-8415-c75892aa8256.jpg)
+![a-note Device Mashup](https://user-images.githubusercontent.com/4708484/97116897-bdea6680-16d6-11eb-8f0e-1335fb83be4b.jpg)
 
 ## Core dependencies
 
