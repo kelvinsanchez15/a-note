@@ -4,7 +4,15 @@
 
 ## About the project
 
-A MERN/JAMStack note taking app!
+A simple, fast and intuitive note-taking app built with NextJS JAMStack solution.
+
+## Features
+
+- [x] No Express.js
+- [x] Serveless API routes
+- [x] Optimistic UI
+- [x] JWT Authentication
+- [x] Profile customization
 
 ## Screenshot
 
