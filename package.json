@@ -21,7 +21,7 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.10.7",
     "mongoose-unique-validator": "^2.0.3",
-    "next": "9.5.3",
+    "next": "10.0.4",
     "prop-types": "^15.7.2",
     "react": "16.13.1",
     "react-dom": "16.13.1",
